@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyWallet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
+      <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h1.5a.75.75 0 000-1.5H18m-5.25 7.5h-1.5" />
+        </svg>
+      </div>
+      <h1 class="text-xl font-semibold text-slate-900">MyWallet</h1>
+      <nav class="ml-auto flex items-center gap-1">
+        <a href="/" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-brand-50 text-brand-600">Expenses</a>
+        <a href="/categories.html" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-100 transition">Categories</a>
+        <a href="/stats.html" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-100 transition">Statistics</a>
+      </nav>
+      <div id="user-menu" class="hidden ml-3 flex items-center gap-2 pl-3 border-l border-slate-200">
+        <img id="user-avatar" src="" alt="" class="w-7 h-7 rounded-full object-cover bg-slate-200" />
+        <span id="user-name" class="text-sm font-medium text-slate-700 max-w-[120px] truncate"></span>
+        <a href="/auth/logout" class="ml-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 transition">Sign out</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-8 space-y-8">
+
+    <!-- Summary Cards -->
+    <section id="summary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Cards injected by JS -->
+    </section>
+
+    <!-- Category Breakdown -->
+    <section>
+      <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">This Month by Category</h2>
+      <div id="category-breakdown" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+    <!-- Add Expense Form -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+      <h2 class="text-base font-semibold text-slate-900 mb-5">Add Expense</h2>
+      <form id="expense-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="lg:col-span-1">
+          <label class="block text-xs font-medium text-slate-500 mb-1">Amount ($)</label>
+          <input id="amount" type="number" step="0.01" min="0.01" placeholder="0.00" required
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" />
+        </div>
+        <div class="lg:col-span-1">
+          <label class="block text-xs font-medium text-slate-500 mb-1">Category</label>
+          <select id="category" required
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition">
+            <option value="">Select category</option>
+          </select>
+        </div>
+        <div class="lg:col-span-1">
+          <label class="block text-xs font-medium text-slate-500 mb-1">Date</label>
+          <input id="date" type="date" required
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" />
+        </div>
+        <div class="lg:col-span-1">
+          <label class="block text-xs font-medium text-slate-500 mb-1">Description</label>
+          <input id="description" type="text" placeholder="Optional note"
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" />
+        </div>
+        <div class="lg:col-span-1 flex items-end">
+          <button type="submit"
+            class="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-lg px-4 py-2.5 text-sm transition active:scale-95 shadow-sm">
+            Add Expense
+          </button>
+        </div>
+      </form>
+      <p id="form-error" class="mt-2 text-xs text-red-500 hidden"></p>
+    </section>
+
+    <!-- Expenses Table -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="text-base font-semibold text-slate-900">All Expenses</h2>
+        <span id="expense-count" class="text-xs text-slate-400 font-medium"></span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-slate-50 text-left">
+              <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Category</th>
+              <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Description</th>
+              <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Amount</th>
+              <th class="px-6 py-3"></th>
+            </tr>
+          </thead>
+          <tbody id="expenses-table-body" class="divide-y divide-slate-100">
+            <!-- Injected by JS -->
+          </tbody>
+        </table>
+        <div id="empty-state" class="hidden py-16 text-center text-slate-400">
+          <svg class="w-10 h-10 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75" />
+          </svg>
+          <p class="text-sm font-medium">No expenses yet</p>
+          <p class="text-xs mt-1">Add your first expense above</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Auth guard
+    (async () => {
+      const res = await fetch('/auth/me');
+      if (!res.ok) { location.replace('/login.html'); return; }
+      const user = await res.json();
+      document.getElementById('user-name').textContent = user.name;
+      if (user.avatar) document.getElementById('user-avatar').src = user.avatar;
+      document.getElementById('user-menu').classList.remove('hidden');
+    })();
+
+    const API = '/api/expenses';
+    const CATS_API = '/api/categories';
+
+    let catData = [];
+
+    async function loadCategories() {
+      const res = await fetch(CATS_API);
+      catData = await res.json();
+      const select = document.getElementById('category');
+      const current = select.value;
+      select.innerHTML = '<option value="">Select category</option>' +
+        catData.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+      if (current) select.value = current;
+    }
+
+    const CATEGORY_COLORS = {
+      'Food & Dining':  { bg: 'bg-orange-100',  text: 'text-orange-700',  dot: 'bg-orange-400'  },
+      'Transport':      { bg: 'bg-blue-100',     text: 'text-blue-700',    dot: 'bg-blue-400'    },
+      'Shopping':       { bg: 'bg-pink-100',     text: 'text-pink-700',    dot: 'bg-pink-400'    },
+      'Housing':        { bg: 'bg-purple-100',   text: 'text-purple-700',  dot: 'bg-purple-400'  },
+      'Health':         { bg: 'bg-green-100',    text: 'text-green-700',   dot: 'bg-green-400'   },
+      'Entertainment':  { bg: 'bg-yellow-100',   text: 'text-yellow-700',  dot: 'bg-yellow-400'  },
+      'Education':      { bg: 'bg-cyan-100',     text: 'text-cyan-700',    dot: 'bg-cyan-400'    },
+      'Travel':         { bg: 'bg-teal-100',     text: 'text-teal-700',    dot: 'bg-teal-400'    },
+      'Utilities':      { bg: 'bg-slate-100',    text: 'text-slate-700',   dot: 'bg-slate-400'   },
+      'Other':          { bg: 'bg-gray-100',     text: 'text-gray-700',    dot: 'bg-gray-400'    },
+    };
+
+    function categoryStyle(cat) {
+      return CATEGORY_COLORS[cat] || { bg: 'bg-indigo-100', text: 'text-indigo-700', dot: 'bg-indigo-400' };
+    }
+
+    function fmt(n) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    }
+
+    function fmtDate(d) {
+      return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    let expenses = [];
+
+    async function loadExpenses() {
+      const res = await fetch(API);
+      expenses = await res.json();
+      render();
+    }
+
+    function render() {
+      renderSummary();
+      renderCategoryBreakdown();
+      renderTable();
+    }
+
+    function renderSummary() {
+      const total = expenses.reduce((s, e) => s + e.amount, 0);
+      const thisMonth = expenses.filter(e => e.date.startsWith(new Date().toISOString().slice(0, 7)));
+      const monthTotal = thisMonth.reduce((s, e) => s + e.amount, 0);
+      const categories = new Set(expenses.map(e => e.category)).size;
+
+      const cards = [
+        { label: 'Total Spent', value: fmt(total), sub: `${expenses.length} expense${expenses.length !== 1 ? 's' : ''}`, color: 'text-brand-600', bg: 'bg-brand-50', icon: 'M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75' },
+        { label: 'This Month', value: fmt(monthTotal), sub: `${thisMonth.length} expense${thisMonth.length !== 1 ? 's' : ''}`, color: 'text-emerald-600', bg: 'bg-emerald-50', icon: 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5' },
+        { label: 'Categories', value: categories, sub: 'tracked', color: 'text-violet-600', bg: 'bg-violet-50', icon: 'M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z M6 6h.008v.008H6V6z' },
+      ];
+
+      document.getElementById('summary').innerHTML = cards.map(c => `
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center gap-4">
+          <div class="w-12 h-12 ${c.bg} rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 ${c.color}" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="${c.icon}" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-medium text-slate-500">${c.label}</p>
+            <p class="text-2xl font-bold text-slate-900 leading-tight">${c.value}</p>
+            <p class="text-xs text-slate-400">${c.sub}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCategoryBreakdown() {
+      const monthPrefix = new Date().toISOString().slice(0, 7);
+      const monthExpenses = expenses.filter(e => e.date.startsWith(monthPrefix));
+
+      const totals = {};
+      monthExpenses.forEach(e => { totals[e.category] = (totals[e.category] || 0) + e.amount; });
+      const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+      const grandTotal = monthExpenses.reduce((s, e) => s + e.amount, 0);
+
+      const limitMap = {};
+      catData.forEach(c => { if (c.monthly_limit) limitMap[c.name] = c.monthly_limit; });
+
+      const el = document.getElementById('category-breakdown');
+      if (sorted.length === 0) {
+        el.innerHTML = '<p class="text-xs text-slate-400 col-span-full">No data yet this month.</p>';
+        return;
+      }
+
+      el.innerHTML = sorted.map(([cat, total]) => {
+        const limit = limitMap[cat] || null;
+        const overLimit = limit && total >= limit;
+        const pct = limit
+          ? Math.min(Math.round((total / limit) * 100), 100)
+          : (grandTotal > 0 ? Math.round((total / grandTotal) * 100) : 0);
+        const s = categoryStyle(cat);
+        return `
+          <div class="bg-white rounded-xl border ${overLimit ? 'border-red-200' : 'border-slate-200'} p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-2 h-2 rounded-full ${s.dot} flex-shrink-0"></span>
+              <span class="text-xs font-medium text-slate-600 truncate flex-1">${cat}</span>
+              ${overLimit ? `<span class="flex-shrink-0 w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
+                <span class="text-red-500 font-bold text-xs leading-none">!</span>
+              </span>` : ''}
+            </div>
+            <p class="text-lg font-bold ${overLimit ? 'text-red-600' : 'text-slate-900'}">${fmt(total)}</p>
+            <div class="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full rounded-full ${overLimit ? 'bg-red-400' : s.dot} transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+            <p class="text-xs ${overLimit ? 'text-red-400 font-medium' : 'text-slate-400'} mt-1">
+              ${limit ? `${fmt(total)} / ${fmt(limit)}` : `${pct}% of total`}
+            </p>
+          </div>`;
+      }).join('');
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('expenses-table-body');
+      const empty = document.getElementById('empty-state');
+      const count = document.getElementById('expense-count');
+
+      count.textContent = `${expenses.length} record${expenses.length !== 1 ? 's' : ''}`;
+
+      if (expenses.length === 0) {
+        tbody.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      tbody.innerHTML = expenses.map(e => {
+        const s = categoryStyle(e.category);
+        return `
+          <tr class="hover:bg-slate-50 transition-colors fade-in">
+            <td class="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">${fmtDate(e.date)}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}">
+                <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>
+                ${e.category}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">${e.description || '—'}</td>
+            <td class="px-6 py-4 text-sm font-semibold text-slate-900 text-right whitespace-nowrap">${fmt(e.amount)}</td>
+            <td class="px-6 py-4 text-right">
+              <button onclick="deleteExpense(${e.id})"
+                class="text-slate-300 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+              </button>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function deleteExpense(id) {
+      if (!confirm('Delete this expense?')) return;
+      await fetch(`${API}/${id}`, { method: 'DELETE' });
+      await loadExpenses();
+    }
+
+    document.getElementById('date').valueAsDate = new Date();
+
+    document.getElementById('expense-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('form-error');
+      errEl.classList.add('hidden');
+
+      const body = {
+        amount: parseFloat(document.getElementById('amount').value),
+        category: document.getElementById('category').value,
+        description: document.getElementById('description').value.trim(),
+        date: document.getElementById('date').value,
+      };
+
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        errEl.textContent = err.error;
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('amount').value = '';
+      document.getElementById('category').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('date').valueAsDate = new Date();
+      await loadExpenses();
+    });
+
+    (async () => {
+      await loadCategories();
+      loadExpenses();
+    })();
+  </script>
+</body>
+</html>

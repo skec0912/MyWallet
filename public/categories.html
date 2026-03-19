@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Categories — MyWallet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .fade-in { animation: fadeIn 0.25s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
+      <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h1.5a.75.75 0 000-1.5H18m-5.25 7.5h-1.5" />
+        </svg>
+      </div>
+      <h1 class="text-xl font-semibold text-slate-900">MyWallet</h1>
+      <nav class="ml-auto flex items-center gap-1">
+        <a href="/" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-100 transition">Expenses</a>
+        <a href="/categories.html" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-brand-50 text-brand-600">Categories</a>
+        <a href="/stats.html" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-100 transition">Statistics</a>
+      </nav>
+      <div id="user-menu" class="hidden ml-3 flex items-center gap-2 pl-3 border-l border-slate-200">
+        <img id="user-avatar" src="" alt="" class="w-7 h-7 rounded-full object-cover bg-slate-200" />
+        <span id="user-name" class="text-sm font-medium text-slate-700 max-w-[120px] truncate"></span>
+        <a href="/auth/logout" class="ml-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 transition">Sign out</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-6 py-8 space-y-6">
+
+    <!-- Page title + count -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-semibold text-slate-900">Categories</h2>
+        <p class="text-sm text-slate-500 mt-0.5">Manage the categories used for expenses.</p>
+      </div>
+      <span id="cat-count" class="text-xs font-medium text-slate-400"></span>
+    </div>
+
+    <!-- Add form -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+      <h3 class="text-sm font-semibold text-slate-700 mb-4">Add Category</h3>
+      <form id="add-form" class="flex gap-3">
+        <input id="new-name" type="text" placeholder="Category name" maxlength="50" required
+          class="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" />
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">$</span>
+          <input id="new-limit" type="number" min="0" step="0.01" placeholder="Monthly limit"
+            class="w-36 pl-7 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" />
+        </div>
+        <button type="submit"
+          class="bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-lg px-4 py-2.5 text-sm transition active:scale-95 shadow-sm whitespace-nowrap">
+          Add
+        </button>
+      </form>
+      <p id="add-error" class="mt-2 text-xs text-red-500 hidden"></p>
+    </div>
+
+    <!-- Categories list -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <ul id="cat-list" class="divide-y divide-slate-100">
+        <!-- Injected by JS -->
+      </ul>
+      <div id="empty-state" class="hidden py-14 text-center text-slate-400">
+        <svg class="w-9 h-9 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z M6 6h.008v.008H6V6z" />
+        </svg>
+        <p class="text-sm font-medium">No categories yet</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Edit modal -->
+  <div id="modal-overlay" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 w-full max-w-sm mx-4">
+      <h3 class="text-base font-semibold text-slate-900 mb-4">Edit Category</h3>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Name</label>
+          <input id="rename-input" type="text" maxlength="50"
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Monthly limit (optional)</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">$</span>
+            <input id="limit-input" type="number" min="0" step="0.01" placeholder="No limit"
+              class="w-full pl-7 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" />
+          </div>
+        </div>
+      </div>
+      <p id="rename-error" class="text-xs text-red-500 mt-2 hidden"></p>
+      <div class="flex gap-3 justify-end mt-5">
+        <button id="modal-cancel"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Cancel</button>
+        <button id="modal-save"
+          class="px-4 py-2 rounded-lg text-sm font-semibold bg-brand-500 hover:bg-brand-600 text-white transition active:scale-95">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Auth guard
+    (async () => {
+      const res = await fetch('/auth/me');
+      if (!res.ok) { location.replace('/login.html'); return; }
+      const user = await res.json();
+      document.getElementById('user-name').textContent = user.name;
+      if (user.avatar) document.getElementById('user-avatar').src = user.avatar;
+      document.getElementById('user-menu').classList.remove('hidden');
+    })();
+
+    const API = '/api/categories';
+    let categories = [];
+    let editingId = null;
+
+    async function load() {
+      const res = await fetch(API);
+      if (!res.ok) return;
+      categories = await res.json();
+      render();
+    }
+
+    function render() {
+      const list = document.getElementById('cat-list');
+      const empty = document.getElementById('empty-state');
+      document.getElementById('cat-count').textContent = `${categories.length} categor${categories.length !== 1 ? 'ies' : 'y'}`;
+
+      if (categories.length === 0) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      list.innerHTML = categories.map(c => `
+        <li class="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50 transition fade-in">
+          <div>
+            <span class="text-sm font-medium text-slate-800">${escape(c.name)}</span>
+            ${c.monthly_limit ? `<span class="ml-2 text-xs text-slate-400">Limit: ${fmtLimit(c.monthly_limit)}/mo</span>` : ''}
+          </div>
+          <div class="flex items-center gap-1">
+            <button onclick="openEdit(${c.id}, '${escapeAttr(c.name)}', ${c.monthly_limit || ''})"
+              class="p-1.5 rounded-lg text-slate-400 hover:text-brand-500 hover:bg-brand-50 transition" title="Rename">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+              </svg>
+            </button>
+            <button onclick="deleteCategory(${c.id}, '${escapeAttr(c.name)}')"
+              class="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-50 transition" title="Delete">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+              </svg>
+            </button>
+          </div>
+        </li>
+      `).join('');
+    }
+
+    function escape(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    function escapeAttr(str) {
+      return str.replace(/'/g, "\\'");
+    }
+    function fmtLimit(n) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    }
+
+    // Add
+    document.getElementById('add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('add-error');
+      errEl.classList.add('hidden');
+      const name = document.getElementById('new-name').value.trim();
+      const limitVal = document.getElementById('new-limit').value;
+      const monthly_limit = limitVal ? parseFloat(limitVal) : null;
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, monthly_limit }),
+      });
+      if (!res.ok) {
+        errEl.textContent = (await res.json()).error;
+        errEl.classList.remove('hidden');
+        return;
+      }
+      document.getElementById('new-name').value = '';
+      document.getElementById('new-limit').value = '';
+      await load();
+    });
+
+    // Delete
+    async function deleteCategory(id, name) {
+      if (!confirm(`Delete "${name}"?\n\nExpenses using this category will keep the category name.`)) return;
+      await fetch(`${API}/${id}`, { method: 'DELETE' });
+      await load();
+    }
+
+    // Edit modal
+    function openEdit(id, name, limit) {
+      editingId = id;
+      document.getElementById('rename-input').value = name;
+      document.getElementById('limit-input').value = limit || '';
+      document.getElementById('rename-error').classList.add('hidden');
+      document.getElementById('modal-overlay').classList.remove('hidden');
+      document.getElementById('rename-input').focus();
+      document.getElementById('rename-input').select();
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.add('hidden');
+      editingId = null;
+    }
+
+    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('modal-overlay')) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    document.getElementById('modal-save').addEventListener('click', async () => {
+      const errEl = document.getElementById('rename-error');
+      errEl.classList.add('hidden');
+      const name = document.getElementById('rename-input').value.trim();
+      if (!name) { errEl.textContent = 'Name cannot be empty.'; errEl.classList.remove('hidden'); return; }
+      const limitVal = document.getElementById('limit-input').value;
+      const monthly_limit = limitVal ? parseFloat(limitVal) : null;
+      const res = await fetch(`${API}/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, monthly_limit }),
+      });
+      if (!res.ok) {
+        errEl.textContent = (await res.json()).error;
+        errEl.classList.remove('hidden');
+        return;
+      }
+      closeModal();
+      await load();
+    });
+
+    document.getElementById('rename-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('modal-save').click();
+    });
+
+    load();
+  </script>
+</body>
+</html>
